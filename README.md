@@ -14,15 +14,15 @@ The goal of the project is to provide statistics such as the number of events th
 
 ### App Architecture
 
-![App Architecture Diagram](diagrams/Capstone - App.jpg)
+![App Architecture Diagram](diagrams/capstoneapp.jpg)
 
 ### Data Model
 
-![Data Model](diagrams/Capstone - Datamodel.jpg)
+![Data Model](diagrams/capstonedatamodel.jpg)
 
 ### Data Dictionary
 
-![Data Dictionary](diagrams/Capstone - DataDict.pdf)
+![Data Dictionary](diagrams/capstonedatadict.pdf)
 
 ### Setup
 * App Env/Directory Structure Setup
