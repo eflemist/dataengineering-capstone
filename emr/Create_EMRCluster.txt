@@ -1,0 +1,5 @@
+*** This is sample command that can be used to create EMR cluster (or you can use AWS GUI 
+to create cluster)
+*** This command must be executed from AWS CLI
+
+aws emr create-cluster --name udacity-cluster --use-default-roles --release-label emr-5.28.0 --instance-count 3 --applications Name=Spark  --ec2-attributes KeyName={your_pem_file} --instance-type m5.xlarge --instance-count 3 --log-uri {your_log_uri} 

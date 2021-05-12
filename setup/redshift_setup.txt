@@ -1,0 +1,42 @@
+Redshift Cluster Setup
+
+*** The setup instructions assume that the Airflow pipeline will be executed from the following location:   /home/{user}/airflow
+
+1) Launch Linux terminal
+
+2) cd /home/{user}/redshift
+
+3) Modify [AWS] section of /home/{user}/redshift/rshift_dwh.cfg to add the aws credential details
+
+4) Execute - python /home/{user}/redshift/gblevntdata_rshift_iam_role_create.py to create iam_role
+
+5) Run the following commands to create Redshift cluster
+
+6) Modify [IAM_ROLE] section of /home/{user}/redshift/rshift_dwh.cfg to add ARN details
+
+7) Execute - python /home/{user}/redshift/gblevntdata_rshift_clust_create.py
+
+8) Modify [CLUSTER] section of the /home/{user}/redshift/rshift_dwh.cfg to add the host details
+
+9) Execute the following to create database on cluster
+    - python /home/{user}/redshift/gblevntdata_rshift_create_stg_tables.py
+    - python /home/{user}/redshift/gblevntdata_rshift_create_prd_tables.py
+
+   Go to Query-Editor page in Redshift and confirm schema and tables have been created  
+     Database: gbleventdb
+     Schemas: gbleventstg, gblevent
+
+10) Go to Redshift and create stored proc - gblevent.load_datedim 
+    - code for procedure is located here: /home/{user}/redshift/gblevntdata_rshift_load_dateDim_proc.py
+    
+11) Prepare EMR master node to work with Redshift
+    - Copy redshift jar to master node:
+      scp -i /home/emfdellpc/airflow/dags/spark-cluster.pem /home/emfdellpc/redshift/redshift-jdbc42-2.0.0.4.jar hadoop@{master_node_url}/home/hadoop
+    - Move jar to /usr/lib directory 
+      sudo cp redshift-jdbc42-2.0.0.4.jar /usr/lib
+
+12) Modify [REDSHIFT_CONN] section of /home/{user}/airflow/gblevent.cfg replacing {redshift_cluster_url} with the url for Redshift cluster
+     i.e. (dwhcluster.comxjkm8stwd.us-east-1.redshift.amazonaws.com)
+
+13) To delete cluster run
+     python /home/{user}/redshift/gblevntdata_rshift_clust_delete.py

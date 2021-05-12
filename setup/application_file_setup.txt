@@ -1,0 +1,23 @@
+App Env/Directory Structure Setup
+
+*** The setup instructions assume that the Airflow pipeline will be executed from the following location:   /home/{user}/airflow
+
+1) Clone Repository
+2) Copy files for clone repository to location names in brackets[] below
+	
+{local_repo}/airflow/gblevent.cfg						-------->  [/home/{user}/airflow]
+{local_repo}/airflow/gblevent_config.py						-------->  [/home/{user}/airflow] 
+{local_repo}/airflow/your_pem_file.pem						-------->  [/home/{user}/airflow]
+{local_repo}/airflow/dags/aer_gblevntdata_load_prd_dag.py			-------->  [/home/{user}/airflow/dags]
+{local_repo}/airflow/dags/aer_gblevntdata_load_stage_dag.py			-------->  [/home/{user}/airflow/dags]
+{local_repo}/airflow/dags/aer_gblevntdata_staging_prep_dag.py			-------->  [/home/{user}/airflow/dags]
+{local_repo}/airflow/plugins/__init__.py					-------->  [/home/{user}/airflow/plugins]
+{local_repo}/airflow/plugins/operators/__init__.py				-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/plugins/operators/aer_gblevntdata_data_quality.py		-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/plugins/operators/aer_gblevntdata_load_datedimensions.py	-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/plugins/operators/aer_gblevntdata_load_dimensions.py	-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/plugins/operators/aer_gblevntdata_s3_to_redshift.py	-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/plugins/operators/aer_gblevntdata_sql_insert_stmts.py	-------->  [/home/{user}/airflow/plugins/operators]
+{local_repo}/airflow/scripts/aer_gblevntdata_fact_prep.py			-------->  [/home/{user}/airflow/scripts]
+{local_repo}/airflow/scripts/aer_gblevntdata_staging_prep.py			-------->  [/home/{user}/airflow/scripts]
+{local_repo}/redshift/*.*							-------->  [/home/{user}/redshift]

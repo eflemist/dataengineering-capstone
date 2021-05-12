@@ -1,0 +1,27 @@
+Airflow Setup
+
+*** The setup instructions assume that the Airflow pipeline will be executed from the following location:   /home/{user}/airflow
+
+Create the following 3 connections in Airflow under Admin/Connections
+1) Connection for AWS Credentials
+   Conn Id:       aws_credentials
+   Conn Type:     Amazon Web Services
+   Login:              
+   Password: 
+
+2) Connection for EMR Cluster
+   Conn Id:       aws_emr
+   Conn Type:     SSH
+   Host:          {url of the master node}
+   Username:      hadoop
+   Port:          22
+   Extra:         {"key_file":"{location of .pem file on local machine"} 
+
+3) Connection for Redshift Cluster
+   Conn Id:       redshift
+   Conn Type:     Postgres
+   Host:          {redshift cluster name}
+   Schema:        gbleventdb
+   Login:         dwhuser
+   Password:      dwhuserPwd1
+   Port:          5439

@@ -1,0 +1,33 @@
+EMR Cluster Setup 
+
+*** The setup instructions assume that the Airflow pipeline will be executed from the following location:   /home/{user}/airflow
+
+1) Create EMR cluster
+
+2) Once cluster is created get url for master node
+
+3) To log on to master node of cluster complete steps below
+
+    a) Launch Linux terminal #1 
+    b) To log into master node of cluster, replace command below with master node url and execute in terminal window - 
+     
+     -  ssh -i /home/emfdellpc/airflow/dags/your_pem_file.pem hadoop@{master_node_url}
+    i.e (ssh -i /home/emfdellpc/airflow/dags/spark-cluster.pem hadoop@ec2-3-236-238-220.compute-1.amazonaws.com)
+
+   c) if configparser module is not on the node then install it using command below
+     -  sudo pip install configparser
+
+4) Copy files to /home/hadoop on master node
+ 
+   a) Launch Linux terminal #2
+   b) run below commands to copy files to the master node
+
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_staging_prep.py hadoop@{master_node_url}/home/hadoop/
+
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_fact_prep.py hadoop@{master_node_url}/home/hadoop/
+
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent_config.py hadoop@{master_node_url}/home/hadoop/
+
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent.cfg hadoop@{master_node_url}/home/hadoop/
+
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/dags/spark-cluster.pem hadoop@{master_node_url}/home/hadoop/
