@@ -22,7 +22,7 @@ The goal of the project is to provide statistics such as the number of events th
 
 ### Data Dictionary
 
-![Data Dictionary](diagrams/capstonedatadict.pdf)
+![Data Dictionary](diagrams/capstonedatadict.jpg)
 
 ### Setup
 * App Env/Directory Structure Setup
@@ -47,13 +47,13 @@ The goal of the project is to provide statistics such as the number of events th
 
 ### Application Execution
 
-* Dataset
+#### Dataset
 The size of the dataset is approx. 5GB. The dataset holds on month of data (Jan, 2019).  
 However, files are processed on a daily bases.  To control which days are processed, modify 
 the start and end dates in the gblevent.cfg file.  The process is currently set process the 1st 
 fourteen days.
  
-* Execution
+#### Execution
 Once setup is complete, launch Airflow to run the dags.  Currently there are 3 dags (but plan is to
 consolidate to one dag only).  The dags are:
  - aer_gblevnt_staging_prep
@@ -67,7 +67,7 @@ consolidate to one dag only).  The dags are:
  
  3) Once aer_gblevent_load_stage dag is complete, manually start aer_gblevent_load_prd dag.
  
- * DAG Description
+ #### DAG Description
  - aer_gblevnt_staging_prep: this dag will use Spark to read and merge the source data (events, mentions, dimension lookups)
  from S3 and create and store a staging file on S3
  
