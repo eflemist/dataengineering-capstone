@@ -27,17 +27,17 @@ In order to support the end goal of querying, analyzing, and reporting aggregate
 
 ### Setup
 
-Assumptions:
+_**Assumptions**_:
  - Implimenter is familiar with AWS and has created AWS account (Access Key/Secret)
  - .pem allowing access to EC2 instance has been created. Note: in the setup instructions, replace any reference to [your_pem_file.pem] with the actual name of your .pem file
  
-* App Env/Directory Structure Setup
+* **App Env/Directory Structure Setup**
    - Instructions for App Setup can be found here: setup/application_file_setup.txt
-* Launch/Setup AWS EMR Cluster 
+* **Launch/Setup AWS EMR Cluster** 
    - Instructions for EMR Cluster Setup can be found here: setup/emr_setup.txt
-* Launch/Setup AWS Redshift Cluster
+* **Launch/Setup AWS Redshift Cluster**
    - Instructions for Redshift Cluster Setup can be found here: setup/redshift_setup.txt
-* Setup/Configure Apache Airflow 
+* **Setup/Configure Apache Airflow** 
    - Instructions for Airflow Setup can be found here: setup/airflow_setup.txt
 
 ### Additional Comments
@@ -54,10 +54,10 @@ Assumptions:
 ### Application Execution
 
 #### Dataset
-The size of the dataset is approx 5GB. The dataset holds on month of data (Jan, 2019).  
+The size of the dataset is approx 5GB. The dataset holds one month of data (Jan, 2019).  
 However, files are processed on a daily bases.  To control which days are processed, modify 
-the start and end dates in the gblevent.cfg file.  The process is currently set process the 1st 
-fourteen days.
+the start and end dates in the gblevent.cfg file.  The process is currently set to process the 1st 
+fourteen days of the month.
  
 #### Execution
 Once setup is complete, launch Airflow to run the dags.  Currently there are 3 dags (but plan is to
@@ -74,14 +74,14 @@ consolidate to one dag only).  The dags are:
  Step 3 - Once aer_gblevent_load_stage dag is complete, manually start aer_gblevent_load_prd dag.
  
  #### DAG Description
- - aer_gblevnt_staging_prep: this dag will use Spark to read and merge the source data (events, mentions, dimension lookups)
+ - aer_gblevnt_staging_prep: this dag performs data wrangling and uses Spark to read and merge the source data (events, mentions, dimension lookups)
  from S3 and create and store a staging file on S3
  
  - aer_gblevent_load_stage: this dag will load the staging file to the staging schema on Redshift and create fact and
  dimension tables from the staging file
   
- - aer_gblevent_load_prd: this dag will load the production schema from the staging schema in Redshift.  It uses Spark
- to create a facts file from staging which is stored in S3, then reads that file to update production schema.
+ - aer_gblevent_load_prd: this dag will load the production schema from the staging schema in Redshift.  It uses Spark to perform data wrangling and 
+ to create a facts file from staging which is stored in S3, then reads that file to update production schema.  The final fact table contains key values for each dimension.
  
 ### Additional Scenarios
 
@@ -91,7 +91,7 @@ Current dataset is approximately 5gb and takes approximately 10-15 minutes total
 
 The current setup would likely not scale to 500gb. Spark is currently running with 1 master and two slaves so more slave nodes would be required to optimized for ram.
 
-I would also consider parralelizing the executiion of the pipeline for each day.
+I would also consider parallelizing the executiion of the pipeline for each day.
 
 *Pipeline Ran On A Daily Basic at 7am*
 
