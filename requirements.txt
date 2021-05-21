@@ -1,4 +1,7 @@
 apache-airflow
+apache-airflow-providers-postgres
+apache-airflow-providers-amazon
+apache-airflow-providers-ssh
 pyspark
 boto3
 configparser
