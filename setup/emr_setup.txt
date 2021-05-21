@@ -22,12 +22,12 @@ EMR Cluster Setup
    a) Launch Linux terminal #2
    b) run below commands to copy files to the master node
 
-   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_staging_prep.py hadoop@{master_node_url}/home/hadoop/
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_staging_prep.py hadoop@{master_node_url}:/home/hadoop/
 
-   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_fact_prep.py hadoop@{master_node_url}/home/hadoop/
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/scripts/aer_gblevntdata_fact_prep.py hadoop@{master_node_url}:/home/hadoop/
 
-   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent_config.py hadoop@{master_node_url}/home/hadoop/
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent_config.py hadoop@{master_node_url}:/home/hadoop/
 
-   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent.cfg hadoop@{master_node_url}/home/hadoop/
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/gblevent.cfg hadoop@{master_node_url}:/home/hadoop/
 
-   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/dags/spark-cluster.pem hadoop@{master_node_url}/home/hadoop/
+   scp -i /home/{user}/airflow/dags/your_pem_file.pem /home/{user}/airflow/dags/spark-cluster.pem hadoop@{master_node_url}:/home/hadoop/

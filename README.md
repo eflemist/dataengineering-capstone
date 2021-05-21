@@ -10,7 +10,8 @@ This project uses Apache Airflow for orchestration along Spark (AWS EMR) to proc
 GDELT monitors print, broadcast, and web news media in over 100 languages from across every country in the world to keep continually updated on breaking developments anywhere on the planet.  Details of each event like (location, type, etc) is captured and given a rating known as the Goldstein scale.  This rating is then used to determine the stability of the location.
 
 ### Project Goal
-The goal of the project is to provide statistics such as the number of events that occurred over a given period, the types of events and a comparison of stability of different locations based on the Goldstein scale. 
+The goal of the project is to provide statistics such as the number of events that occurred over a given period, the types of events and a comparison of the stability of different locations based on the Goldstein scale. 
+In order to support the end goal of querying, analyzing, and reporting aggregated statistics, a dimensional model consisting of fact and dimension tables has been implimented.
 
 ### App Architecture
 
@@ -25,6 +26,11 @@ The goal of the project is to provide statistics such as the number of events th
 ![Data Dictionary](diagrams/capstonedatadict.jpg)
 
 ### Setup
+
+Assumptions:
+ - Implimenter is familiar with AWS and has created AWS account (Access Key/Secret)
+ - .pem allowing access to EC2 instance has been created. Note: in the setup instructions, replace any reference to [your_pem_file.pem] with the actual name of your .pem file
+ 
 * App Env/Directory Structure Setup
    - Instructions for App Setup can be found here: setup/application_file_setup.txt
 * Launch/Setup AWS EMR Cluster 
@@ -48,7 +54,7 @@ The goal of the project is to provide statistics such as the number of events th
 ### Application Execution
 
 #### Dataset
-The size of the dataset is approx. 5GB. The dataset holds on month of data (Jan, 2019).  
+The size of the dataset is approx 5GB. The dataset holds on month of data (Jan, 2019).  
 However, files are processed on a daily bases.  To control which days are processed, modify 
 the start and end dates in the gblevent.cfg file.  The process is currently set process the 1st 
 fourteen days.
@@ -60,12 +66,12 @@ consolidate to one dag only).  The dags are:
  - aer_gblevent_load_stage
  - aer_gblevent_load_prd
  
- 1) First, trigger aer_gblevnt_staging_prep.  Since this is a back fill process, you only need to unpause the dag in 
-    Airflow and it will start automatically
+ Step 1 - Trigger aer_gblevnt_staging_prep.  Since this is a back fill process, you only need to unpause the dag in 
+          Airflow and it will start automatically
   
- 2) Once aer_gblevnt_staging_prep dag is complete, manually start aer_gblevent_load_stage dag.
+ Step 2 - Once aer_gblevnt_staging_prep dag is complete, manually start aer_gblevent_load_stage dag.
  
- 3) Once aer_gblevent_load_stage dag is complete, manually start aer_gblevent_load_prd dag.
+ Step 3 - Once aer_gblevent_load_stage dag is complete, manually start aer_gblevent_load_prd dag.
  
  #### DAG Description
  - aer_gblevnt_staging_prep: this dag will use Spark to read and merge the source data (events, mentions, dimension lookups)
@@ -81,21 +87,26 @@ consolidate to one dag only).  The dags are:
 
 *Data Increase by 100%*
 
-Current dataset is approximately 7gb and takes approximately 10-15 minutes to complete. 
+Current dataset is approximately 5gb and takes approximately 10-15 minutes total to execute all 3 dags. 
 
-The current setup would not scale to 700gb. Currently running with 1 master and two slaves so would require more slave nodes, optimized for ram.
+The current setup would likely not scale to 500gb. Spark is currently running with 1 master and two slaves so more slave nodes would be required to optimized for ram.
 
-The data set could also not be loaded in one step. Instead I would parralelize executing the pipeline for each month of data on average 58gb, or even divide further into each two week tranch of data. Executed on a large enough cluster the pipeline could scale to 700gb.
+I would also consider parralelizing the executiion of the pipeline for each day.
 
 *Pipeline Ran On A Daily Basic at 7am*
 
-Only change required would be configuring the dag to run daily, not monthly.
-Would also have to create some sort of API to sync the daily immigration data to the EMR master node
-Date of datasets would also have to be included in the project directory
+The pipeline is currently configured to run daily a 7am.
+Additional logic would need to be added to check that the data is available prior to start of processing 
 
 *Database Access To 100+ people*
 
-The /mnt1/ directory can be considered the database, with the API being spark sql.
-For each person, their IPs would be need to be whitelisted for the master node and I would create a python script that remotely reads the data from the emr directory on the master node.
-Alternatively as a final step the data could be pushed to s3 post analyis with their IPs whitelisted to read the s3 bucket (which is better).
-Final alternative is to introduce redshift, load the data from EMR master to redshift & whitelist them to execute sql against the redshift database.
+Storing the data (facts and dimensions) on Redshift cluster resolves the concern for given access to 100+ people.
+A couple of items to consider as the volume of data increase in Redshift:
+
+- Compress Data In S3.  The benifits of doing this are:
+    - Faster file upload to S3
+    - Lower S3 storage utilization (cost)
+    - Faster load process because uncompression can happen as the file is read.
+    
+- Use Columnar Formats such as parquet for S3 data.  The benifit for doing this is: 
+    - Columnar formats deliver better performance when processing as compared to row-based formats.

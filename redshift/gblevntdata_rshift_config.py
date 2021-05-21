@@ -20,6 +20,3 @@ DWH_PORT               = config.get("CLUSTER","DB_PORT")
 DWH_IAM_ROLE_NAME      = config.get("IAM_ROLE", "IAM_ROLE_NAME")
 DWH_ARN                = config.get("IAM_ROLE", "ARN")
 
-DWH_LOG_DATA           = config.get("S3", "LOG_DATA")
-DWH_LOGJSONPATH        = config.get("S3", "LOG_JSONPATH")
-DWH_SONG_DATA          = config.get("S3", "SONG_DATA")

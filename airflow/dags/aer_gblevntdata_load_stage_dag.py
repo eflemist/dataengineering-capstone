@@ -21,6 +21,7 @@ sys.path.append(parentDir)
 import boto3
 from airflow import DAG
 
+from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators import AERs3ToRedshiftOperator
 from airflow.operators import AERDataQualityOperator
@@ -49,7 +50,11 @@ start_date=datetime.datetime.now()
 dag = DAG("aer_gblevent_load_stage", start_date=start_date)
 
 def rename_stage_file():
-
+    """
+    This func will rename the staging file in the S3 location once the file has been processed
+    The file is renamed to stagevnt_table_bak.csv{current_date}+counter_value
+    """
+    
     timenow = datetime.datetime.now()
     timenow_str = datetime.datetime.strftime(timenow, '%Y%m%d')
     
@@ -65,6 +70,9 @@ def rename_stage_file():
         cnt = cnt + 1
         s3_resource.Object("dataeng-capstone-stgevents", dst_key).copy_from(CopySource=f'dataeng-capstone-stgevents/{src_key}')
         s3_resource.Object("dataeng-capstone-stgevents", src_key).delete()
+
+
+start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 # task to load staging table (gbldata_staging) with gbl event data 
 
@@ -96,6 +104,8 @@ run_gblevnt_stg_dq_checks = AERDataQualityOperator(
     table_names=['gbleventstg.gbldata_staging'],
     dq_checks=gblevnt_stg_dq_checks
 )
+
+# tasks to load staging dim tables  
 
 load_actorclass_stgdim_table = AERLoadDimOperator(
     task_id='Load_actorclass_stgdim_table',
@@ -133,6 +143,8 @@ load_evntcat_stgdim_table = AERLoadDimOperator(
     append_mode=False
 )
 
+# tasks to load staging fact table  
+
 load_gbldata_stgfact_table = AERLoadDimOperator(
     task_id='Load_gbldata_stgfact_table',
     dag=dag,
@@ -162,12 +174,17 @@ run_gblevnt_stg_fact_dim_dq_checks = AERDataQualityOperator(
     dq_checks=gblevnt_stg_fact_dim_dq_checks
 )
 
+# task to rename the staging file
+
 rename_stage_file = PythonOperator(
     task_id = 'rename_stage_file',
     python_callable=rename_stage_file,
     dag=dag
 )
 
+end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+
+start_operator >> load_gblevent_to_redshift 
 load_gblevent_to_redshift >> run_gblevnt_stg_dq_checks
 run_gblevnt_stg_dq_checks >> load_actorclass_stgdim_table
 run_gblevnt_stg_dq_checks >> load_evntclass_stgdim_table
@@ -180,3 +197,4 @@ load_evntloc_stgdim_table >> run_gblevnt_stg_fact_dim_dq_checks
 load_evntcat_stgdim_table >> run_gblevnt_stg_fact_dim_dq_checks
 load_gbldata_stgfact_table >> run_gblevnt_stg_fact_dim_dq_checks
 run_gblevnt_stg_fact_dim_dq_checks >> rename_stage_file
+rename_stage_file >> end_operator

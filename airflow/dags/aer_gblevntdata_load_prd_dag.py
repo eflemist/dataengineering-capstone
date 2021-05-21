@@ -61,6 +61,8 @@ start_date=datetime.datetime.now()
 
 dag = DAG("aer_gblevent_load_prd", start_date=start_date)
 
+start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
+
 # task to load actorclass dim table
 
 load_actorclass_dim_table = AERLoadDimOperator(
@@ -135,12 +137,15 @@ run_gblevnt_dim_dq_checks = AERDataQualityOperator(
 )
 
 # task to create gbldata fact file
+
 get_gblevnt_fact = SSHOperator(
     ssh_hook=sshHook,
     task_id="get_gblevnt_fact",
     command = spark_submit_cmd,
     dag=dag
 )
+
+# task to load the gbldata fact file to redshift
 
 load_gblfct_to_redshift = AERs3ToRedshiftOperator(
     task_id="load_gblfct_to_redshift",
@@ -152,6 +157,13 @@ load_gblfct_to_redshift = AERs3ToRedshiftOperator(
     s3_key="s3://dataeng-capstone-gbldata/gbldata_fact.csv"
 )
 
+end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+
+start_operator >> load_actorclass_dim_table
+start_operator >> load_evntclass_dim_table
+start_operator >> load_evntloc_dim_table
+start_operator >> load_evntcat_dim_table
+start_operator >> load_date_dim_table
 load_actorclass_dim_table >> run_gblevnt_dim_dq_checks
 load_evntclass_dim_table >> run_gblevnt_dim_dq_checks
 load_evntloc_dim_table >> run_gblevnt_dim_dq_checks
@@ -159,4 +171,4 @@ load_evntcat_dim_table >> run_gblevnt_dim_dq_checks
 load_date_dim_table >> run_gblevnt_dim_dq_checks
 run_gblevnt_dim_dq_checks >> get_gblevnt_fact
 get_gblevnt_fact >> load_gblfct_to_redshift
-#load_gbldata_fact_table >> run_gblevnt_dim_dq_checks
+load_gblfct_to_redshift >> end_operator

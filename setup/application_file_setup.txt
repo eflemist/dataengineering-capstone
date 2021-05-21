@@ -3,7 +3,8 @@ App Env/Directory Structure Setup
 *** The setup instructions assume that the Airflow pipeline will be executed from the following location:   /home/{user}/airflow
 
 1) Clone Repository
-2) Copy files for clone repository to location names in brackets[] below
+2) Modify the config files (gblevent.cfg and rshift_dwh.cfg) adding the AWS KEY/SECRET detials  
+3) Copy files for clone repository to location names in brackets[] below
 	
 {local_repo}/airflow/gblevent.cfg						-------->  [/home/{user}/airflow]
 {local_repo}/airflow/gblevent_config.py						-------->  [/home/{user}/airflow] 
