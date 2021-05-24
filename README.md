@@ -18,7 +18,8 @@ can determine how stable a region/country is and used information as part of the
 ### Example Queries
 Queries such as the following can be executed against the data:
 
-- To determine the Goldstein rating for each continent for the period 2015/02
+- To determine the Goldstein rating for each continent for the period 2015/02:
+
 select eld.continent, round(avg(gf.goldstein_scale)::numeric,2), count(gf.evnt_cnt) 
   from gblevent.gbldata_fact gf
   join gblevent.evntloc_dim eld
@@ -29,7 +30,8 @@ select eld.continent, round(avg(gf.goldstein_scale)::numeric,2), count(gf.evnt_c
     and dd.calendarmonth = 02
 group by eld.continent
 
-- To determine the number of events by eventtype for each country in Europe
+- To determine the number of events by eventtype for each country in Europe:
+
 select eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc, sum(gf.evnt_cnt)
   from gblevent.gbldata_fact gf
   join gblevent.evntclass_dim ecd
@@ -44,8 +46,8 @@ select eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc, sum(gf.evnt_cnt)
 The following tools/applications make up the technology stack for this app:
 Apache Airflow, Spark (AWS EMR) and AWS Redshift
 
-The process to gather and store the data is a multi-step/multi-task process which needs to execute at a scheduled time.  
-For example, the process performs multiple task to interact with S3 (to read/store files), EMR (to process data) 
+The process to gather and store the data is a multi-step/multi-task process which needs to execute at a scheduled time.  For example, 
+the process performs multiple task to interact with S3 (to read/store files), EMR (to process data) 
 and Redshift (to store and query data).  As such Airflow has been selected to perform this orchestration as its 
 key feature is that it enables you to easily build scheduled data pipelines using a flexible Python framework.
 
@@ -63,7 +65,7 @@ The fact and dimension model (star schema) has been selected for use with this a
 because the data been reported on is not transactional in nature. Once created, the details on a record will not change over time and
 for complete analysis, the requirement is to provide reports at different levels or dimensions. For example, how many events occured over 
 a period of time and/or at a particular location.  Or what or the different types of events that occured in one region.  The fact and 
-dimension model is ideal for this analysis and thus has been choosen for use here.
+dimension model is ideal for this kind of analysis and thus has been choosen for use here.
 
 ![Data Model](diagrams/capstonedatamodel.jpg)
 
