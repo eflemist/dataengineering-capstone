@@ -11,13 +11,59 @@ GDELT monitors print, broadcast, and web news media in over 100 languages from a
 
 ### Project Goal
 The goal of the project is to provide statistics such as the number of events that occurred over a given period, the types of events and a comparison of the stability of different locations based on the Goldstein scale. 
-In order to support the end goal of querying, analyzing, and reporting aggregated statistics, a dimensional model consisting of fact and dimension tables has been implimented.
+In order to support the end goal of querying, analyzing, and reporting aggregated statistics, a dimensional model consisting of fact and dimension tables has been implimented.  These stats and ratings gathered can be used
+by organizations or companies looking to expand their operations into different regions arouond the world.  By monitoring or reporting on the Goldstein scale for a particualr region over a period of time, the organization
+can determine how stable a region/country is and used information as part of the decision to expand to a region/country.
+
+### Example Queries
+Queries such as the following can be executed against the data:
+
+- To determine the Goldstein rating for each continent for the period 2015/02
+select eld.continent, round(avg(gf.goldstein_scale)::numeric,2), count(gf.evnt_cnt) 
+  from gblevent.gbldata_fact gf
+  join gblevent.evntloc_dim eld
+    on gf.evntloc_key = eld.evntloc_key
+  join gblevent.date_dim dd
+    on gf.date_key = dd.datekey
+  where dd.calendaryear = 2015
+    and dd.calendarmonth = 02
+group by eld.continent
+
+- To determine the number of events by eventtype for each country in Europe
+select eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc, sum(gf.evnt_cnt)
+  from gblevent.gbldata_fact gf
+  join gblevent.evntclass_dim ecd
+    on gf.evntcls_key = ecd.evntcls_key
+  join gblevent.evntloc_dim eld
+    on gf.evntloc_key = eld.evntloc_key
+ where eld.continent = 'Europe'
+ group by eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc
+ order by eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc
 
 ### App Architecture
+The following tools/applications make up the technology stack for this app:
+Apache Airflow, Spark (AWS EMR) and AWS Redshift
+
+The process to gather and store the data is a multi-step/multi-task process which needs to execute at a scheduled time.  
+For example, the process performs multiple task to interact with S3 (to read/store files), EMR (to process data) 
+and Redshift (to store and query data).  As such Airflow has been selected to perform this orchestration as its 
+key feature is that it enables you to easily build scheduled data pipelines using a flexible Python framework.
+
+AWS EMR (Spark) has been selected for use in data processing.  This is neccesary as the source data needs to be cleansed 
+and merged in order to be stored in a format that can be quiered and reported on.
+
+For reporting needs, AWS Redshift has been made part of the technology stack.  Loading data from S3 is a requirement and 
+Redshift provides an effeicent method to perform this task.  Additionally, Redshift can be used to perform data analysis queries
+and provides fast query performance.
 
 ![App Architecture Diagram](diagrams/capstoneapp.jpg)
 
 ### Data Model
+The fact and dimension model (star schema) has been selected for use with this application.  This model fits well with this application
+because the data been reported on is not transactional in nature. Once created, the details on a record will not change over time and
+for complete analysis, the requirement is to provide reports at different levels or dimensions. For example, how many events occured over 
+a period of time and/or at a particular location.  Or what or the different types of events that occured in one region.  The fact and 
+dimension model is ideal for this analysis and thus has been choosen for use here.
 
 ![Data Model](diagrams/capstonedatamodel.jpg)
 
