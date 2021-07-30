@@ -45,9 +45,9 @@ select eld.cntry, ecd.envtclsdesc, ecd.evnttypdesc, sum(gf.evnt_cnt)
 ### App Dashboard
 The following screens are representations of actual queries executed against the data stored in the Redshift database.
 
-![January Measurements] (diagrams/January_Measurement.jpg)
-![February Measurements] (diagrams/February_Measurement.jpg)
-![Comparison Measurements] (diagrams/Comparison_measurement.jpg)
+![January Measurements](diagrams/January_Measurement.jpg)
+![February Measurements](diagrams/February_Measurement.jpg)
+![Comparison Measurements](diagrams/Comparison_measurement.jpg)
 
 ### App Architecture
 The following tools/applications make up the technology stack for this app:
